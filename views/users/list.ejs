@@ -15,7 +15,12 @@
         {{/each}}
     </table>
 </script>
-
+<script>
+    Handlebars.getisterHelper("isImage", function(photo) {
+        if(photo) return "/upload/photo/" + photo;
+        else return "http://via.placeholder.com/100x100";
+    });
+</script>
 <script>
     $.ajax({
         type:"get",

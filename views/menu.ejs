@@ -31,16 +31,21 @@
     </div>
   </nav>
   <script>
-    if(sessionStorage.getItem("uid")) {
+    if(sessionStorage.getItem("uid")){
         $("#login, #mypage, #logout").toggle();
         $("#mypage a").html(sessionStorage.getItem("uid"));
     }
 
-    $("#logout").on("click", "a", function(e) {
+    $("#logout").on("click", "a", function(e){
         e.preventDefault();
-        if(confirm("정말로 로그아웃하시겠습니까?")) {
+        if(confirm("정말로 로그아웃하실래요?")) {
             sessionStorage.clear();
             location.href="/";
         }
+    });
+
+    $("#mypage").on("click", "a", function(e){
+        e.preventDefault();
+        location.href="/users/mypage?uid=" + sessionStorage.getItem("uid");
     });
   </script>
