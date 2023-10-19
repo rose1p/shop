@@ -1,171 +1,166 @@
 <div class="my-5">
-  <div class="row mb-3">
-      <form name="frm" class="col-md-4">
-          <div class="input-group">
-              <input name="query" class="form-control" placeholder="검색어">
-              <button class="btn btn-primary">검색</button>
-          </div>
-          <div class="logo_box">
-            <a href="http://localhost:3000/" class="logo_list" onclick="ga360.GA_Event ('click_공통_PC', '해더', '', '교보문고', '');">
-                <span class="hidden">교보문고</span>
-            </a>
-          </div>
-      </form>
-      <div class="col pt-2">
-          <span id="total">0권</span>
-      </div>
-  </div>
-  <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="https://contents.kyobobook.co.kr/display/i_1624_450 (1)_33caba5d749945e6a928eb0e93c299d2.jpg" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="https://contents.kyobobook.co.kr/pmtn/2023/banner/230925/i_1624_450.jpg" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="https://contents.kyobobook.co.kr/display/1624_450_2 (2)_456de520ae454eae9fe12c3f18066e1d.jpg" class="d-block w-100" alt="...">
-      </div>
+    <div class="row mb-3">
+        <form name="frm" class="col-md-4">
+            <div class="input-group">
+                <input name="query" class="form-control" placeholder="검색어">
+                <button class="btn btn-primary">검색</button>
+            </div>
+        </form>
+        <div class="col pt-2">
+            <span id="total">0권</span>
+        </div>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+    <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="https://contents.kyobobook.co.kr/display/i_1624_450 (1)_33caba5d749945e6a928eb0e93c299d2.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://contents.kyobobook.co.kr/pmtn/2023/banner/230925/i_1624_450.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="https://contents.kyobobook.co.kr/display/1624_450_2 (2)_456de520ae454eae9fe12c3f18066e1d.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+    <hr>
+    <div id="div_books" class="row"></div>
+    <div id="pagination" class="pagination justify-content-center mt-5"></div>
   </div>
-  <hr>
-  <div id="div_books" class="row"></div>
-  <div id="pagination" class="pagination justify-content-center mt-5"></div>
-</div>
-<script id="temp_books" type="x-handlebars-template">
-    {{#each .}}
-        <div class="col-md-4 col-lg-2 col-6">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <a href="/books/info?bid={{bid}}">
-                        <img src="{{isImage image}}" width="90%">
-                    </a>    
-                    <div class="ellipsis mt-2">{{title}}</div>
-                </div>    
-                <div class="card-footer">
-                    <span style="font-size:0.7rem;">{{fmtPrice price}}</span>
-                    <span class="float-end">
-                        <i class="bi {{heart ucnt}} like" bid="{{bid}}"></i>
-                        <span class="count">{{fcnt}}</span>
-                    </span>    
-                </div>    
-            </div>    
-        </div>    
-    {{/each}}
-</script>
-<script>
-    Handlebars.registerHelper("heart", function(ucnt){
-        if(ucnt==1){
-            return "bi-heart-fill";
-        }else{
-            return "bi-heart";
-        }
-    })
-    Handlebars.registerHelper("isImage", function(image){
-        if(image){
-            return image;
-        }else {
-            return "http://via.placeholder.com/170x230";
-        }
-    });
-    Handlebars.registerHelper("fmtPrice", function(price){
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원"
-    });
-</script>
-<script>
-    let page=1;
-    getTotal();
-
-    //좋아요 추가
-    $("#div_books").on("click", ".bi-heart", function(){
-        if(!sessionStorage.getItem("uid")){
-            location.href="/users/login";
-        }else{
-            const bid=$(this).attr("bid");
-            $.ajax({
-                type:"post",
-                url:"/books/like/insert",
-                data:{uid:sessionStorage.getItem("uid"), bid},
-                success:function(){
-                    alert("좋아요 추가!");
-                    getTotal();
-                }
-            })
-        }
-    });
-
-    //좋아요 취소
-    $("#div_books").on("click", ".bi-heart-fill", function(){
-        const bid=$(this).attr("bid");
-        $.ajax({
-            type:"get",
-            url:"/books/like/delete",
-            data:{uid:sessionStorage.getItem("uid"), bid},
-            success:function(){
-                alert("좋아요 취소!");
-                getTotal();
-            }
-        })
-    });
-
-    $(frm).on("submit", function(e){
-        e.preventDefault();
-        page=1;
-        getTotal();
-    });
-
-    function getTotal(){
-        $.ajax({
-            type:"get",
-            url:"/count",
-            data:{query:$(frm.query).val()},
-            success:function(data){
-                if(data==0){
-                    alert("검색도서가 없습니다!");
-                    $(frm.query).val("");
-                    getTotal();
-                }else{
-                    $("#total").html(data + "권");
-                    const totalPages = Math.ceil(data/6);
-                    $("#pagination").twbsPagination("changeTotalPages", totalPages, page);
-                }
-            }
-        });
-    }
-
-    function getBooks(){
-        $.ajax({
-            type:"get",
-            url:"/books.json",
-            data:{page, query:$(frm.query).val(), uid:sessionStorage.getItem("uid")},
-            success:function(data){
-                console.log(data);
-                const temp=Handlebars.compile($("#temp_books").html());
-                $("#div_books").html(temp(data));
-            }
-        })
-    }
-
-    $('#pagination').twbsPagination({
-        totalPages:10, //총 페이지 번호 수
-        visiblePages: 5, // 하단에서 한 번에 보여 지는 페이지 번호 수
-        startPage : 1, // 시작 시 표시되는 현재 페이지
-        initiateStartPageClick: false, // 플러그인이 시작 시 페이지 버튼 클릭 여부 (default : true) 
-        first : '<i class="bi bi-chevron-bar-left"></i>', // 페이지네이션 버튼 중 처음으로 돌아가는 버튼에 쓰여 있는 텍스트
-        prev : '<i class="bi bi-chevron-left"></i>', // 이전 페이지 버튼에 쓰여 있는 텍스트
-        next : '<i class="bi bi-chevron-right"></i>', // 다음 페이지 버튼에 쓰여 있는 텍스트
-        last : '<i class="bi bi-chevron-bar-right"></i>', // 페이지네이션 버튼 중 마지막으로 가는 버튼에 쓰여 있는 텍스트
-        onPageClick: function (event, clickPage) {
-            page=clickPage;
-            getBooks(); 
-        }
-    });
-</script>
+  <script id="temp_books" type="x-handlebars-template">
+      {{#each .}}
+          <div class="col-md-4 col-lg-2 col-6">
+              <div class="card mb-3">
+                  <div class="card-body">
+                      <a href="/books/info?bid={{bid}}">
+                          <img src="{{isImage image}}" width="90%">
+                      </a>    
+                      <div class="ellipsis mt-2">{{title}}</div>
+                  </div>    
+                  <div class="card-footer">
+                      <span style="font-size:0.7rem;">{{fmtPrice price}}</span>
+                      <span class="float-end">
+                          <i class="bi {{heart ucnt}} like" bid="{{bid}}"></i>
+                          <span class="count">{{fcnt}}</span>
+                      </span>    
+                  </div>    
+              </div>    
+          </div>    
+      {{/each}}
+  </script>
+  <script>
+      Handlebars.registerHelper("heart", function(ucnt){
+          if(ucnt==1){
+              return "bi-heart-fill";
+          }else{
+              return "bi-heart";
+          }
+      })
+      Handlebars.registerHelper("isImage", function(image){
+          if(image){
+              return image;
+          }else {
+              return "http://via.placeholder.com/170x230";
+          }
+      });
+      Handlebars.registerHelper("fmtPrice", function(price){
+          return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "원"
+      });
+  </script>
+  <script>
+      let page=1;
+      getTotal();
+  
+      //좋아요 추가
+      $("#div_books").on("click", ".bi-heart", function(){
+          if(!sessionStorage.getItem("uid")){
+              location.href="/users/login";
+          }else{
+              const bid=$(this).attr("bid");
+              $.ajax({
+                  type:"post",
+                  url:"/books/like/insert",
+                  data:{uid:sessionStorage.getItem("uid"), bid},
+                  success:function(){
+                      alert("좋아요 추가!");
+                      getTotal();
+                  }
+              })
+          }
+      });
+  
+      //좋아요 취소
+      $("#div_books").on("click", ".bi-heart-fill", function(){
+          const bid=$(this).attr("bid");
+          $.ajax({
+              type:"get",
+              url:"/books/like/delete",
+              data:{uid:sessionStorage.getItem("uid"), bid},
+              success:function(){
+                  alert("좋아요 취소!");
+                  getTotal();
+              }
+          })
+      });
+  
+      $(frm).on("submit", function(e){
+          e.preventDefault();
+          page=1;
+          getTotal();
+      });
+  
+      function getTotal(){
+          $.ajax({
+              type:"get",
+              url:"/count",
+              data:{query:$(frm.query).val()},
+              success:function(data){
+                  if(data==0){
+                      alert("검색도서가 없습니다!");
+                      $(frm.query).val("");
+                      getTotal();
+                  }else{
+                      $("#total").html(data + "권");
+                      const totalPages = Math.ceil(data/6);
+                      $("#pagination").twbsPagination("changeTotalPages", totalPages, page);
+                  }
+              }
+          });
+      }
+  
+      function getBooks(){
+          $.ajax({
+              type:"get",
+              url:"/books.json",
+              data:{page, query:$(frm.query).val(), uid:sessionStorage.getItem("uid")},
+              success:function(data){
+                  console.log(data);
+                  const temp=Handlebars.compile($("#temp_books").html());
+                  $("#div_books").html(temp(data));
+              }
+          })
+      }
+  
+      $('#pagination').twbsPagination({
+          totalPages:10, //총 페이지 번호 수
+          visiblePages: 5, // 하단에서 한 번에 보여 지는 페이지 번호 수
+          startPage : 1, // 시작 시 표시되는 현재 페이지
+          initiateStartPageClick: false, // 플러그인이 시작 시 페이지 버튼 클릭 여부 (default : true) 
+          first : '<i class="bi bi-chevron-bar-left"></i>', // 페이지네이션 버튼 중 처음으로 돌아가는 버튼에 쓰여 있는 텍스트
+          prev : '<i class="bi bi-chevron-left"></i>', // 이전 페이지 버튼에 쓰여 있는 텍스트
+          next : '<i class="bi bi-chevron-right"></i>', // 다음 페이지 버튼에 쓰여 있는 텍스트
+          last : '<i class="bi bi-chevron-bar-right"></i>', // 페이지네이션 버튼 중 마지막으로 가는 버튼에 쓰여 있는 텍스트
+          onPageClick: function (event, clickPage) {
+              page=clickPage;
+              getBooks(); 
+          }
+      });
+  </script>
