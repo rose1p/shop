@@ -57,4 +57,10 @@ router.post('/update', function(req, res) {
     });
 });
 
+router.get('/order', function(req, res){
+    const cid=req.query.cid;
+    console.log('....................', cid);
+    res.sendStatus(200);
+});
+
 module.exports = router;
