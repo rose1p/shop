@@ -47,7 +47,7 @@
   </nav>
   <script>
     if(sessionStorage.getItem("uid") && sessionStorage.getItem("uid") != "admin"){ //일반사용자
-        $("#login, #mypage, #logout, #cart, #order").toggle();
+        $("#login, #mypage, #logout, #search, #cart, #order").toggle();
         $("#mypage a").html(sessionStorage.getItem("uid"));
     }
 
